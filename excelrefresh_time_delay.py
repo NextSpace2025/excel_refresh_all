@@ -72,7 +72,7 @@ if __name__ == '__main__':
     # ✅ 후처리
     time.sleep(30)
 
-    target_file = r"C:\Users\ikjin\OneDrive - (주)익진엔지니어링\김재용\weapon\Data\집행내역서(DB).xlsmm"
+    target_file = r"C:\Users\ikjin\OneDrive - (주)익진엔지니어링\김재용\weapon\Data\집행내역서(DB).xlsm"
     macro_name = "CombineWithTableAndSource"
 
     refresh_and_run_macro(target_file, macro_name)

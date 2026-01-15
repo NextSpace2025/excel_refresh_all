@@ -1,16 +1,11 @@
-import time
 import subprocess
+import os
 
-# 1. 엑셀 새로고침 스크립트 실행
-subprocess.run(["python", r'C:\Users\ikjin\OneDrive - (주)익진엔지니어링\김재용\weapon\Project\refresh\excelrefresh_time_delay.py'])
+# 엑셀 새로고침 스크립트 실행
+script_dir = os.path.dirname(os.path.abspath(__file__))
+refresh_script = os.path.join(script_dir, 'excelrefresh_time_delay.py')
 
+subprocess.run(["python", refresh_script])
 
-# # 2. 15초 대기
-time.sleep(15)
-
-# 3. DB 저장 스크립트 실행
-subprocess.run(["python", r'C:\Users\ikjin\OneDrive - (주)익진엔지니어링\김재용\weapon\Project\refresh\xlsmtodb.py'])
-
-
-print("모든 작업이 완료되었습니다.")
+print("✅ 엑셀 리프레시 작업이 완료되었습니다.")
 exit(0)
