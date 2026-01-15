@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(git mv:*)",
+      "Bash(move db_manager.py srcdatabase )",
+      "Bash(move:*)"
+    ]
+  }
+}

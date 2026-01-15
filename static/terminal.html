@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Refresh Terminal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1e1e1e;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            color: #d4d4d4;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-header {
+            background: #2d2d30;
+            padding: 10px 20px;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .terminal-title {
+            color: #cccccc;
+            font-size: 14px;
+        }
+
+        .terminal-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .close { background: #f44336; }
+        .minimize { background: #ff9800; }
+        .maximize { background: #4caf50; }
+
+        .terminal-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #1e1e1e;
+        }
+
+        .terminal-output {
+            margin-bottom: 20px;
+        }
+
+        .line {
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+
+        .prompt {
+            color: #4ec9b0;
+        }
+
+        .command {
+            color: #dcdcaa;
+        }
+
+        .success {
+            color: #4ec9b0;
+        }
+
+        .error {
+            color: #f48771;
+        }
+
+        .info {
+            color: #569cd6;
+        }
+
+        .warning {
+            color: #ce9178;
+        }
+
+        .timestamp {
+            color: #858585;
+            font-size: 0.9em;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            position: sticky;
+            bottom: 0;
+            background: #1e1e1e;
+            padding: 10px 0;
+            border-top: 1px solid #3e3e42;
+        }
+
+        .input-prompt {
+            color: #4ec9b0;
+            margin-right: 10px;
+        }
+
+        #commandInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #d4d4d4;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .help-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #252526;
+            border-left: 3px solid #4ec9b0;
+        }
+
+        .help-title {
+            color: #4ec9b0;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .help-command {
+            color: #dcdcaa;
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+
+        .json-output {
+            color: #ce9178;
+            margin-left: 20px;
+            white-space: pre-wrap;
+        }
+
+        .api-url-display {
+            position: fixed;
+            top: 50px;
+            right: 20px;
+            background: #2d2d30;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #858585;
+            border: 1px solid #3e3e42;
+        }
+
+        .api-url-display span {
+            color: #4ec9b0;
+        }
+
+        .loading {
+            display: inline-block;
+            color: #569cd6;
+        }
+
+        .loading::after {
+            content: '';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3e3e42;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4e4e52;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal-header">
+        <div class="terminal-title">Excel Refresh Terminal</div>
+        <div class="terminal-controls">
+            <button class="control-btn close"></button>
+            <button class="control-btn minimize"></button>
+            <button class="control-btn maximize"></button>
+        </div>
+    </div>
+
+    <div class="api-url-display">
+        API: <span id="apiUrlDisplay">http://127.0.0.1:8000</span>
+    </div>
+
+    <div class="terminal-body" id="terminal">
+        <div class="terminal-output" id="output">
+            <div class="line success">Excel Refresh Terminal v1.0.0</div>
+            <div class="line info">Type 'help' for available commands</div>
+            <div class="line">───────────────────────────────────────────────</div>
+        </div>
+    </div>
+
+    <div class="input-line">
+        <span class="input-prompt">$</span>
+        <input type="text" id="commandInput" autofocus autocomplete="off" />
+    </div>
+
+    <script>
+        let API_URL = localStorage.getItem('apiUrl') || 'http://127.0.0.1:8000';
+        const output = document.getElementById('output');
+        const commandInput = document.getElementById('commandInput');
+        const terminal = document.getElementById('terminal');
+        const apiUrlDisplay = document.getElementById('apiUrlDisplay');
+
+        let commandHistory = [];
+        let historyIndex = -1;
+
+        // API URL 표시 업데이트
+        apiUrlDisplay.textContent = API_URL;
+
+        // 명령어 정의
+        const commands = {
+            help: {
+                description: 'Show available commands',
+                action: () => {
+                    return `
+<span class="help-title">Available Commands:</span>
+
+<span class="info">Connection:</span>
+  <span class="command">setapi &lt;url&gt;</span>        Set API server URL
+  <span class="command">getapi</span>               Show current API URL
+  <span class="command">ping</span>                 Test API connection
+
+<span class="info">Database:</span>
+  <span class="command">init</span>                 Initialize database with default files
+
+<span class="info">File Management:</span>
+  <span class="command">list</span>                 List all registered Excel files
+  <span class="command">add &lt;path&gt;</span>          Add new Excel file path
+  <span class="command">delete &lt;id&gt;</span>         Delete file by ID
+
+<span class="info">Settings:</span>
+  <span class="command">settings</span>             Show current refresh settings
+  <span class="command">set-delay &lt;sec&gt;</span>     Set refresh delay (seconds)
+  <span class="command">set-inter &lt;sec&gt;</span>     Set inter-file delay (seconds)
+
+<span class="info">Execution:</span>
+  <span class="command">refresh</span>              Run Excel refresh process
+
+<span class="info">Utility:</span>
+  <span class="command">clear</span>                Clear terminal screen
+  <span class="command">help</span>                 Show this help message
+`;
+                }
+            },
+            clear: {
+                description: 'Clear terminal screen',
+                action: () => {
+                    output.innerHTML = '';
+                    return null;
+                }
+            },
+            setapi: {
+                description: 'Set API URL',
+                action: (args) => {
+                    if (!args[0]) {
+                        return '<span class="error">Error: Please provide API URL</span>\nUsage: setapi &lt;url&gt;';
+                    }
+                    try {
+                        new URL(args[0]);
+                        API_URL = args[0];
+                        localStorage.setItem('apiUrl', args[0]);
+                        apiUrlDisplay.textContent = API_URL;
+                        return `<span class="success">API URL set to: ${args[0]}</span>`;
+                    } catch (e) {
+                        return `<span class="error">Error: Invalid URL format</span>`;
+                    }
+                }
+            },
+            getapi: {
+                description: 'Show current API URL',
+                action: () => {
+                    return `<span class="info">Current API URL: ${API_URL}</span>`;
+                }
+            },
+            ping: {
+                description: 'Test API connection',
+                action: async () => {
+                    try {
+                        const start = Date.now();
+                        const response = await fetch(`${API_URL}/api`);
+                        const data = await response.json();
+                        const duration = Date.now() - start;
+
+                        if (response.ok) {
+                            return `<span class="success">✓ API is reachable</span>
+<span class="info">Response time: ${duration}ms</span>
+<span class="json-output">${JSON.stringify(data, null, 2)}</span>`;
+                        } else {
+                            return `<span class="error">✗ API returned error: ${response.status}</span>`;
+                        }
+                    } catch (error) {
+                        return `<span class="error">✗ Connection failed: ${error.message}</span>`;
+                    }
+                }
+            },
+            init: {
+                description: 'Initialize database',
+                action: async () => {
+                    try {
+                        const response = await fetch(`${API_URL}/init-db`, { method: 'POST' });
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            return `<span class="success">✓ ${data.message}</span>`;
+                        } else {
+                            return `<span class="error">✗ Error: ${data.detail}</span>`;
+                        }
+                    } catch (error) {
+                        return `<span class="error">✗ Request failed: ${error.message}</span>`;
+                    }
+                }
+            },
+            list: {
+                description: 'List all files',
+                action: async () => {
+                    try {
+                        const response = await fetch(`${API_URL}/files`);
+                        const files = await response.json();
+
+                        if (response.ok) {
+                            if (files.length === 0) {
+                                return '<span class="warning">No files registered</span>';
+                            }
+                            let result = `<span class="success">Found ${files.length} file(s):</span>\n`;
+                            files.forEach(file => {
+                                result += `\n<span class="info">[${file.id}]</span> ${file.file_path}`;
+                            });
+                            return result;
+                        } else {
+                            return `<span class="error">✗ Error: ${response.status}</span>`;
+                        }
+                    } catch (error) {
+                        return `<span class="error">✗ Request failed: ${error.message}</span>`;
+                    }
+                }
+            },
+            add: {
+                description: 'Add new file',
+                action: async (args) => {
+                    if (!args[0]) {
+                        return '<span class="error">Error: Please provide file path</span>\nUsage: add &lt;path&gt;';
+                    }
+                    const path = args.join(' ');
+                    try {
+                        const response = await fetch(`${API_URL}/files`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ path: path })
+                        });
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            return `<span class="success">✓ ${data.message}</span>\n<span class="info">Path: ${data.path}</span>`;
+                        } else {
+                            return `<span class="error">✗ Error: ${data.detail}</span>`;
+                        }
+                    } catch (error) {
+                        return `<span class="error">✗ Request failed: ${error.message}</span>`;
+                    }
+                }
+            },
+            delete: {
+                description: 'Delete file by ID',
+                action: async (args) => {
+                    if (!args[0]) {
+                        return '<span class="error">Error: Please provide file ID</span>\nUsage: delete &lt;id&gt;';
+                    }
+                    const id = parseInt(args[0]);
+                    if (isNaN(id)) {
+                        return '<span class="error">Error: ID must be a number</span>';
+                    }
+                    try {
+                        const response = await fetch(`${API_URL}/files/${id}`, { method: 'DELETE' });
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            return `<span class="success">✓ ${data.message}</span>`;
+                        } else {
+                            return `<span class="error">✗ Error: ${data.detail}</span>`;
+                        }
+                    } catch (error) {
+                        return `<span class="error">✗ Request failed: ${error.message}</span>`;
+                    }
+                }
+            },
+            settings: {
+                description: 'Show current settings',
+                action: async () => {
+                    try {
+                        const response = await fetch(`${API_URL}/settings`);
+                        const settings = await response.json();
+
+                        if (response.ok) {
+                            return `<span class="success">Current Settings:</span>
+<span class="info">Refresh Delay:</span> ${settings.refresh_delay} seconds
+<span class="info">Inter-File Delay:</span> ${settings.inter_file_delay} seconds`;
+                        } else {
+                            return `<span class="error">✗ Error: ${response.status}</span>`;
+                        }
+                    } catch (error) {
+                        return `<span class="error">✗ Request failed: ${error.message}</span>`;
+                    }
+                }
+            },
+            'set-delay': {
+                description: 'Set refresh delay',
+                action: async (args) => {
+                    if (!args[0]) {
+                        return '<span class="error">Error: Please provide delay in seconds</span>\nUsage: set-delay &lt;seconds&gt;';
+                    }
+                    const delay = parseInt(args[0]);
+                    if (isNaN(delay) || delay < 1) {
+                        return '<span class="error">Error: Delay must be a positive number</span>';
+                    }
+                    try {
+                        // Get current settings first
+                        const getResp = await fetch(`${API_URL}/settings`);
+                        const current = await getResp.json();
+
+                        // Update with new delay
+                        const response = await fetch(`${API_URL}/settings`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                refresh_delay: delay,
+                                inter_file_delay: current.inter_file_delay
+                            })
+                        });
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            return `<span class="success">✓ Refresh delay set to ${delay} seconds</span>`;
+                        } else {
+                            return `<span class="error">✗ Error: ${data.detail}</span>`;
+                        }
+                    } catch (error) {
+                        return `<span class="error">✗ Request failed: ${error.message}</span>`;
+                    }
+                }
+            },
+            'set-inter': {
+                description: 'Set inter-file delay',
+                action: async (args) => {
+                    if (!args[0]) {
+                        return '<span class="error">Error: Please provide delay in seconds</span>\nUsage: set-inter &lt;seconds&gt;';
+                    }
+                    const delay = parseInt(args[0]);
+                    if (isNaN(delay) || delay < 1) {
+                        return '<span class="error">Error: Delay must be a positive number</span>';
+                    }
+                    try {
+                        // Get current settings first
+                        const getResp = await fetch(`${API_URL}/settings`);
+                        const current = await getResp.json();
+
+                        // Update with new delay
+                        const response = await fetch(`${API_URL}/settings`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                refresh_delay: current.refresh_delay,
+                                inter_file_delay: delay
+                            })
+                        });
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            return `<span class="success">✓ Inter-file delay set to ${delay} seconds</span>`;
+                        } else {
+                            return `<span class="error">✗ Error: ${data.detail}</span>`;
+                        }
+                    } catch (error) {
+                        return `<span class="error">✗ Request failed: ${error.message}</span>`;
+                    }
+                }
+            },
+            refresh: {
+                description: 'Run Excel refresh',
+                action: async () => {
+                    try {
+                        addLine('<span class="info">Starting Excel refresh process...</span>');
+                        const response = await fetch(`${API_URL}/run-refresh`, { method: 'POST' });
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            return `<span class="success">✓ ${data.message}</span>`;
+                        } else {
+                            return `<span class="error">✗ Error: ${data.detail}</span>`;
+                        }
+                    } catch (error) {
+                        return `<span class="error">✗ Request failed: ${error.message}</span>`;
+                    }
+                }
+            }
+        };
+
+        function getTimestamp() {
+            const now = new Date();
+            return now.toLocaleTimeString('ko-KR', { hour12: false });
+        }
+
+        function addLine(text, includeTimestamp = true) {
+            const line = document.createElement('div');
+            line.className = 'line';
+            if (includeTimestamp) {
+                line.innerHTML = `<span class="timestamp">[${getTimestamp()}]</span> ${text}`;
+            } else {
+                line.innerHTML = text;
+            }
+            output.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        async function executeCommand(input) {
+            const parts = input.trim().split(' ');
+            const cmd = parts[0].toLowerCase();
+            const args = parts.slice(1);
+
+            // Show command
+            addLine(`<span class="prompt">$</span> <span class="command">${input}</span>`, true);
+
+            if (!cmd) return;
+
+            if (commands[cmd]) {
+                const loadingLine = document.createElement('div');
+                loadingLine.className = 'line loading';
+                loadingLine.textContent = 'Processing';
+                output.appendChild(loadingLine);
+                terminal.scrollTop = terminal.scrollHeight;
+
+                try {
+                    const result = await commands[cmd].action(args);
+                    output.removeChild(loadingLine);
+
+                    if (result) {
+                        addLine(result, false);
+                    }
+                } catch (error) {
+                    output.removeChild(loadingLine);
+                    addLine(`<span class="error">✗ Unexpected error: ${error.message}</span>`, false);
+                }
+            } else {
+                addLine(`<span class="error">Command not found: ${cmd}</span>`, false);
+                addLine(`Type <span class="command">help</span> for available commands`, false);
+            }
+        }
+
+        // Event listeners
+        commandInput.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter') {
+                const input = commandInput.value;
+                if (input.trim()) {
+                    commandHistory.unshift(input);
+                    historyIndex = -1;
+                    await executeCommand(input);
+                }
+                commandInput.value = '';
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    commandInput.value = commandHistory[historyIndex];
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    commandInput.value = commandHistory[historyIndex];
+                } else {
+                    historyIndex = -1;
+                    commandInput.value = '';
+                }
+            }
+        });
+
+        // Auto-focus input when clicking anywhere
+        document.addEventListener('click', () => {
+            commandInput.focus();
+        });
+
+        // Load saved API URL
+        const savedUrl = localStorage.getItem('apiUrl');
+        if (savedUrl) {
+            API_URL = savedUrl;
+            apiUrlDisplay.textContent = savedUrl;
+        }
+    </script>
+</body>
+</html>
