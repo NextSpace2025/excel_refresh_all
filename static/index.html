@@ -11,548 +11,1033 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-dark: #1e1e2e;
+            --bg-card: #2a2a3e;
+            --bg-hover: #3a3a4e;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --border: #3f3f5a;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
-
+        /* Header */
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .section h2 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin: 5px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 5px;
-            font-size: 1em;
-            margin: 10px 0;
-            transition: border-color 0.3s;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .file-list {
-            margin-top: 20px;
-        }
-
-        .file-item {
-            background: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 10px 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 20px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 320px;
+            gap: 20px;
+            padding: 20px;
+            height: calc(100vh - 80px);
+        }
+
+        /* Sidebar Left - Quick Actions */
+        .sidebar-left {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95em;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .action-btn svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            font-weight: 600;
+        }
+
+        .action-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .action-btn.danger {
+            background: var(--danger);
+            border: none;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-item {
+            background: var(--bg-hover);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.75em;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        /* Center Content - File List */
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow: hidden;
+        }
+
+        .file-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-hover);
+            padding: 10px 15px;
+            border-radius: 10px;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 0.95em;
+            width: 100%;
+            outline: none;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-box svg {
+            width: 20px;
+            height: 20px;
+            color: var(--text-secondary);
+        }
+
+        /* Add File Section */
+        .add-file-section {
+            display: flex;
+            gap: 10px;
+        }
+
+        .add-file-section input {
+            flex: 1;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 0.95em;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .add-file-section input:focus {
+            border-color: var(--primary);
+        }
+
+        .add-file-section button {
+            padding: 12px 24px;
+            background: var(--success);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .add-file-section button:hover {
+            background: #0ea770;
+            transform: translateY(-2px);
+        }
+
+        /* File List */
+        .file-list-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .file-list-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .file-list-container::-webkit-scrollbar-track {
+            background: var(--bg-hover);
+            border-radius: 10px;
+        }
+
+        .file-list-container::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+
+        .file-item:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .file-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .file-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .file-path {
-            flex: 1;
-            word-break: break-all;
-            margin-right: 15px;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .file-id {
-            background: #667eea;
+            background: var(--primary);
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .file-delete {
+            padding: 8px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .file-delete:hover {
+            background: var(--danger);
             color: white;
-            padding: 5px 10px;
-            border-radius: 3px;
-            font-weight: bold;
-            margin-right: 10px;
         }
 
-        .settings-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+        .file-delete svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Sidebar Right - Settings & Log */
+        .sidebar-right {
+            display: flex;
+            flex-direction: column;
             gap: 15px;
-            margin: 15px 0;
         }
 
-        .setting-item {
-            background: white;
-            padding: 15px;
-            border-radius: 5px;
-        }
-
-        .setting-item label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .message {
-            padding: 15px;
-            border-radius: 5px;
-            margin: 15px 0;
-            display: none;
-        }
-
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .message.show {
-            display: block;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .loading.show {
-            display: block;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .current-settings {
-            background: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 15px 0;
-        }
-
+        /* Settings Panel */
         .setting-row {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #e0e0e0;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
         }
 
         .setting-row:last-child {
             border-bottom: none;
         }
 
-        @media (max-width: 768px) {
-            .settings-grid {
+        .setting-label {
+            font-size: 0.9em;
+        }
+
+        .setting-value {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .setting-input {
+            width: 70px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--text-primary);
+            text-align: center;
+            font-size: 0.9em;
+            outline: none;
+        }
+
+        .setting-input:focus {
+            border-color: var(--primary);
+        }
+
+        .setting-unit {
+            color: var(--text-secondary);
+            font-size: 0.85em;
+        }
+
+        .save-settings-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .save-settings-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Activity Log */
+        .log-container {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .log-item {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+            background: var(--bg-hover);
+        }
+
+        .log-time {
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .log-message {
+            flex: 1;
+        }
+
+        .log-item.success { border-left: 3px solid var(--success); }
+        .log-item.error { border-left: 3px solid var(--danger); }
+        .log-item.info { border-left: 3px solid var(--primary); }
+
+        /* API Config */
+        .api-config {
+            display: flex;
+            gap: 8px;
+        }
+
+        .api-config input {
+            flex: 1;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: var(--text-primary);
+            font-size: 0.85em;
+            outline: none;
+        }
+
+        .api-config button {
+            padding: 10px 16px;
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .api-config button:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Toast Messages */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 280px;
+        }
+
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        .toast.info { background: var(--primary); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 1.1em;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-container {
                 grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .sidebar-left, .sidebar-right {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Excel Refresh Manager</h1>
-            <p>엑셀 파일 자동 리프레시 관리 시스템</p>
+    <!-- Header -->
+    <header class="header">
+        <h1>Excel Refresh Manager</h1>
+        <div class="header-status">
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span>서버 연결됨</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <div class="sidebar-left">
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-title">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    빠른 실행
+                </div>
+                <div class="quick-actions">
+                    <button class="action-btn primary" onclick="runRefresh()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        엑셀 리프레시 실행
+                    </button>
+                    <button class="action-btn" onclick="loadFiles()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                        </svg>
+                        파일 목록 새로고침
+                    </button>
+                    <button class="action-btn" onclick="initDatabase()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+                        </svg>
+                        DB 초기화
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="card">
+                <div class="card-title">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    통계
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalFiles">0</div>
+                        <div class="stat-label">등록된 파일</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="refreshDelayStat">-</div>
+                        <div class="stat-label">리프레시 대기</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Configuration -->
+            <div class="card">
+                <div class="card-title">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                    </svg>
+                    API 서버
+                </div>
+                <div class="api-config">
+                    <input type="text" id="apiUrl" value="http://127.0.0.1:8000" placeholder="API URL">
+                    <button onclick="saveApiUrl()">저장</button>
+                </div>
+            </div>
         </div>
 
-        <div class="content">
-            <div id="message" class="message"></div>
-            <div id="loading" class="loading">
-                <div class="spinner"></div>
-                <p>처리 중...</p>
-            </div>
-
-            <!-- API 설정 섹션 -->
-            <div class="section">
-                <h2>API 서버 설정</h2>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <input type="text" id="apiUrl" value="http://127.0.0.1:8000" placeholder="http://127.0.0.1:8000" style="flex: 1;">
-                    <button class="btn btn-success" onclick="saveApiUrl()">저장</button>
-                </div>
-                <p style="margin-top: 10px; color: #666;">
-                    현재 API URL: <strong id="currentApiUrl">http://127.0.0.1:8000</strong>
-                </p>
-            </div>
-
-            <!-- 초기화 섹션 -->
-            <div class="section">
-                <h2>1. 초기 설정</h2>
-                <button class="btn btn-success" onclick="initDatabase()">데이터베이스 초기화</button>
-                <p style="margin-top: 10px; color: #666;">최초 1회 실행하여 초기 파일 목록을 로드합니다.</p>
-            </div>
-
-            <!-- 파일 목록 섹션 -->
-            <div class="section">
-                <h2>2. 파일 관리</h2>
-                <button class="btn" onclick="loadFiles()">파일 목록 새로고침</button>
-
-                <div style="margin-top: 20px;">
-                    <h3 style="margin-bottom: 10px;">새 파일 추가</h3>
-                    <input type="text" id="newFilePath" placeholder="C:\path\to\file.xlsx">
-                    <button class="btn btn-success" onclick="addFile()">추가</button>
+        <!-- Center Content -->
+        <div class="center-content">
+            <div class="card" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+                <div class="card-title">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    파일 관리
                 </div>
 
-                <div class="file-list" id="fileList">
-                    <p style="color: #666;">파일 목록을 불러오려면 '파일 목록 새로고침' 버튼을 클릭하세요.</p>
+                <!-- Add File -->
+                <div class="add-file-section">
+                    <input type="text" id="newFilePath" placeholder="새 파일 경로 입력 (예: C:\data\report.xlsx)">
+                    <button onclick="addFile()">추가</button>
                 </div>
-            </div>
 
-            <!-- 설정 섹션 -->
-            <div class="section">
-                <h2>3. 리프레시 설정</h2>
-                <button class="btn" onclick="loadSettings()">현재 설정 보기</button>
+                <!-- Search -->
+                <div class="search-box" style="margin-top: 15px;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="파일 검색..." oninput="filterFiles()">
+                </div>
 
-                <div class="current-settings" id="currentSettings" style="display: none;">
-                    <h3 style="margin-bottom: 10px;">현재 설정</h3>
-                    <div class="setting-row">
-                        <span>리프레시 후 대기 시간:</span>
-                        <strong id="currentRefreshDelay">-</strong>
-                    </div>
-                    <div class="setting-row">
-                        <span>파일 간 대기 시간:</span>
-                        <strong id="currentInterFileDelay">-</strong>
+                <!-- File List -->
+                <div class="file-list-container" id="fileList" style="margin-top: 15px;">
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"/>
+                        </svg>
+                        <p>등록된 파일이 없습니다</p>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div style="margin-top: 20px;">
-                    <h3 style="margin-bottom: 10px;">설정 변경</h3>
-                    <div class="settings-grid">
-                        <div class="setting-item">
-                            <label>리프레시 후 대기 시간 (초)</label>
-                            <input type="number" id="refreshDelay" value="10" min="1">
-                        </div>
-                        <div class="setting-item">
-                            <label>파일 간 대기 시간 (초)</label>
-                            <input type="number" id="interFileDelay" value="5" min="1">
-                        </div>
-                    </div>
-                    <button class="btn btn-success" onclick="updateSettings()">설정 저장</button>
+        <!-- Right Sidebar -->
+        <div class="sidebar-right">
+            <!-- Settings -->
+            <div class="card">
+                <div class="card-title">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    리프레시 설정
                 </div>
+                <div class="setting-row">
+                    <span class="setting-label">리프레시 대기 시간</span>
+                    <div class="setting-value">
+                        <input type="number" class="setting-input" id="refreshDelay" value="10" min="1">
+                        <span class="setting-unit">초</span>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <span class="setting-label">파일 간 대기 시간</span>
+                    <div class="setting-value">
+                        <input type="number" class="setting-input" id="interFileDelay" value="5" min="1">
+                        <span class="setting-unit">초</span>
+                    </div>
+                </div>
+                <button class="save-settings-btn" onclick="updateSettings()">설정 저장</button>
             </div>
 
-            <!-- 실행 섹션 -->
-            <div class="section">
-                <h2>4. 리프레시 실행</h2>
-                <button class="btn btn-success" onclick="runRefresh()" style="font-size: 1.2em; padding: 15px 30px;">
-                    엑셀 리프레시 실행
-                </button>
-                <p style="margin-top: 10px; color: #666;">등록된 모든 엑셀 파일을 순차적으로 리프레시합니다.</p>
+            <!-- Activity Log -->
+            <div class="card" style="flex: 1; display: flex; flex-direction: column;">
+                <div class="card-title">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    활동 로그
+                </div>
+                <div class="log-container" id="logContainer">
+                    <div class="log-item info">
+                        <span class="log-time">--:--</span>
+                        <span class="log-message">시스템 시작됨</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         let API_URL = localStorage.getItem('apiUrl') || 'http://127.0.0.1:8000';
+        let allFiles = [];
 
+        // Initialize
+        window.addEventListener('load', () => {
+            const savedUrl = localStorage.getItem('apiUrl');
+            if (savedUrl) {
+                API_URL = savedUrl;
+                document.getElementById('apiUrl').value = savedUrl;
+            }
+            loadFiles();
+            loadSettings();
+            addLog('시스템 시작됨', 'info');
+        });
+
+        // Toast Notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    ${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>' :
+                      type === 'error' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>' :
+                      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'}
+                </svg>
+                ${message}
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // Activity Log
+        function addLog(message, type = 'info') {
+            const container = document.getElementById('logContainer');
+            const now = new Date();
+            const time = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+            const log = document.createElement('div');
+            log.className = `log-item ${type}`;
+            log.innerHTML = `
+                <span class="log-time">${time}</span>
+                <span class="log-message">${message}</span>
+            `;
+            container.insertBefore(log, container.firstChild);
+            if (container.children.length > 50) container.lastChild.remove();
+        }
+
+        // Loading
+        function showLoading(show = true) {
+            document.getElementById('loadingOverlay').classList.toggle('show', show);
+        }
+
+        // API URL
         function saveApiUrl() {
             const newUrl = document.getElementById('apiUrl').value.trim();
             if (!newUrl) {
-                showMessage('API URL을 입력하세요.', 'error');
+                showToast('API URL을 입력하세요.', 'error');
                 return;
             }
-
-            // URL 형식 검증
             try {
                 new URL(newUrl);
                 API_URL = newUrl;
                 localStorage.setItem('apiUrl', newUrl);
-                document.getElementById('currentApiUrl').textContent = newUrl;
-                showMessage('API URL이 저장되었습니다.', 'success');
+                showToast('API URL이 저장되었습니다.', 'success');
+                addLog('API URL 변경됨', 'info');
             } catch (e) {
-                showMessage('올바른 URL 형식이 아닙니다.', 'error');
+                showToast('올바른 URL 형식이 아닙니다.', 'error');
             }
         }
 
-        function showMessage(message, type = 'success') {
-            const msgEl = document.getElementById('message');
-            msgEl.textContent = message;
-            msgEl.className = `message ${type} show`;
-            setTimeout(() => {
-                msgEl.classList.remove('show');
-            }, 5000);
-        }
-
-        function showLoading(show = true) {
-            const loadingEl = document.getElementById('loading');
-            loadingEl.className = show ? 'loading show' : 'loading';
-        }
-
-        async function initDatabase() {
-            try {
-                showLoading(true);
-                const response = await fetch(`${API_URL}/init-db`, {
-                    method: 'POST'
-                });
-                const data = await response.json();
-                showLoading(false);
-
-                if (response.ok) {
-                    showMessage(data.message, 'success');
-                    loadFiles();
-                } else {
-                    showMessage(data.detail || '초기화 실패', 'error');
-                }
-            } catch (error) {
-                showLoading(false);
-                showMessage('서버 연결 실패: ' + error.message, 'error');
-            }
-        }
-
+        // Files
         async function loadFiles() {
             try {
                 showLoading(true);
                 const response = await fetch(`${API_URL}/files`);
-                const files = await response.json();
+                allFiles = await response.json();
                 showLoading(false);
-
-                const fileListEl = document.getElementById('fileList');
-
-                if (files.length === 0) {
-                    fileListEl.innerHTML = '<p style="color: #666;">등록된 파일이 없습니다.</p>';
-                    return;
-                }
-
-                fileListEl.innerHTML = files.map(file => `
-                    <div class="file-item">
-                        <span class="file-id">ID: ${file.id}</span>
-                        <span class="file-path">${file.file_path}</span>
-                        <button class="btn btn-danger" onclick="deleteFile(${file.id})">삭제</button>
-                    </div>
-                `).join('');
-
-                showMessage(`${files.length}개의 파일을 불러왔습니다.`, 'success');
+                renderFiles(allFiles);
+                document.getElementById('totalFiles').textContent = allFiles.length;
+                showToast(`${allFiles.length}개의 파일을 불러왔습니다.`, 'success');
+                addLog(`파일 목록 로드 (${allFiles.length}개)`, 'success');
             } catch (error) {
                 showLoading(false);
-                showMessage('파일 목록 로드 실패: ' + error.message, 'error');
+                showToast('파일 목록 로드 실패', 'error');
+                addLog('파일 목록 로드 실패', 'error');
             }
+        }
+
+        function renderFiles(files) {
+            const container = document.getElementById('fileList');
+            if (files.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"/>
+                        </svg>
+                        <p>등록된 파일이 없습니다</p>
+                    </div>
+                `;
+                return;
+            }
+            container.innerHTML = files.map(file => {
+                const fileName = file.file_path.split('\\').pop().split('/').pop();
+                return `
+                    <div class="file-item">
+                        <div class="file-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <div class="file-info">
+                            <div class="file-name">${fileName}</div>
+                            <div class="file-path">${file.file_path}</div>
+                        </div>
+                        <span class="file-id">#${file.id}</span>
+                        <button class="file-delete" onclick="deleteFile(${file.id})">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterFiles() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allFiles.filter(f => f.file_path.toLowerCase().includes(query));
+            renderFiles(filtered);
         }
 
         async function addFile() {
             const path = document.getElementById('newFilePath').value.trim();
             if (!path) {
-                showMessage('파일 경로를 입력하세요.', 'error');
+                showToast('파일 경로를 입력하세요.', 'error');
                 return;
             }
-
             try {
                 showLoading(true);
                 const response = await fetch(`${API_URL}/files`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ path: path })
                 });
-                const data = await response.json();
                 showLoading(false);
-
                 if (response.ok) {
-                    showMessage(data.message, 'success');
                     document.getElementById('newFilePath').value = '';
+                    showToast('파일이 추가되었습니다.', 'success');
+                    addLog(`파일 추가: ${path.split('\\').pop()}`, 'success');
                     loadFiles();
                 } else {
-                    showMessage(data.detail || '파일 추가 실패', 'error');
+                    const data = await response.json();
+                    showToast(data.detail || '파일 추가 실패', 'error');
                 }
             } catch (error) {
                 showLoading(false);
-                showMessage('파일 추가 실패: ' + error.message, 'error');
+                showToast('파일 추가 실패', 'error');
             }
         }
 
         async function deleteFile(fileId) {
-            if (!confirm('정말로 이 파일을 삭제하시겠습니까?')) {
-                return;
-            }
-
+            if (!confirm('이 파일을 삭제하시겠습니까?')) return;
             try {
                 showLoading(true);
-                const response = await fetch(`${API_URL}/files/${fileId}`, {
-                    method: 'DELETE'
-                });
-                const data = await response.json();
+                const response = await fetch(`${API_URL}/files/${fileId}`, { method: 'DELETE' });
                 showLoading(false);
-
                 if (response.ok) {
-                    showMessage(data.message, 'success');
+                    showToast('파일이 삭제되었습니다.', 'success');
+                    addLog(`파일 삭제 (ID: ${fileId})`, 'success');
                     loadFiles();
                 } else {
-                    showMessage(data.detail || '파일 삭제 실패', 'error');
+                    showToast('파일 삭제 실패', 'error');
                 }
             } catch (error) {
                 showLoading(false);
-                showMessage('파일 삭제 실패: ' + error.message, 'error');
+                showToast('파일 삭제 실패', 'error');
             }
         }
 
+        // Settings
         async function loadSettings() {
             try {
-                showLoading(true);
                 const response = await fetch(`${API_URL}/settings`);
                 const settings = await response.json();
-                showLoading(false);
-
-                document.getElementById('currentRefreshDelay').textContent = settings.refresh_delay + '초';
-                document.getElementById('currentInterFileDelay').textContent = settings.inter_file_delay + '초';
-                document.getElementById('currentSettings').style.display = 'block';
-
                 document.getElementById('refreshDelay').value = settings.refresh_delay;
                 document.getElementById('interFileDelay').value = settings.inter_file_delay;
-
-                showMessage('설정을 불러왔습니다.', 'success');
+                document.getElementById('refreshDelayStat').textContent = settings.refresh_delay + '초';
             } catch (error) {
-                showLoading(false);
-                showMessage('설정 로드 실패: ' + error.message, 'error');
+                addLog('설정 로드 실패', 'error');
             }
         }
 
         async function updateSettings() {
             const refreshDelay = parseInt(document.getElementById('refreshDelay').value);
             const interFileDelay = parseInt(document.getElementById('interFileDelay').value);
-
             if (refreshDelay < 1 || interFileDelay < 1) {
-                showMessage('대기 시간은 1초 이상이어야 합니다.', 'error');
+                showToast('대기 시간은 1초 이상이어야 합니다.', 'error');
                 return;
             }
-
             try {
                 showLoading(true);
                 const response = await fetch(`${API_URL}/settings`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        refresh_delay: refreshDelay,
-                        inter_file_delay: interFileDelay
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refresh_delay: refreshDelay, inter_file_delay: interFileDelay })
                 });
-                const data = await response.json();
                 showLoading(false);
-
                 if (response.ok) {
-                    showMessage(data.message, 'success');
-                    loadSettings();
+                    showToast('설정이 저장되었습니다.', 'success');
+                    addLog('설정 변경됨', 'success');
+                    document.getElementById('refreshDelayStat').textContent = refreshDelay + '초';
                 } else {
-                    showMessage(data.detail || '설정 저장 실패', 'error');
+                    showToast('설정 저장 실패', 'error');
                 }
             } catch (error) {
                 showLoading(false);
-                showMessage('설정 저장 실패: ' + error.message, 'error');
+                showToast('설정 저장 실패', 'error');
             }
         }
 
-        async function runRefresh() {
-            if (!confirm('등록된 모든 엑셀 파일을 리프레시하시겠습니까?')) {
-                return;
-            }
-
+        // Database Init
+        async function initDatabase() {
+            if (!confirm('데이터베이스를 초기화하시겠습니까?')) return;
             try {
                 showLoading(true);
-                const response = await fetch(`${API_URL}/run-refresh`, {
-                    method: 'POST'
-                });
+                const response = await fetch(`${API_URL}/init-db`, { method: 'POST' });
                 const data = await response.json();
                 showLoading(false);
-
                 if (response.ok) {
-                    showMessage(data.message, 'success');
+                    showToast(data.message, 'success');
+                    addLog('DB 초기화 완료', 'success');
+                    loadFiles();
                 } else {
-                    showMessage(data.detail || '리프레시 실행 실패', 'error');
+                    showToast(data.detail || '초기화 실패', 'error');
                 }
             } catch (error) {
                 showLoading(false);
-                showMessage('리프레시 실행 실패: ' + error.message, 'error');
+                showToast('서버 연결 실패', 'error');
+                addLog('서버 연결 실패', 'error');
             }
         }
 
-        // 페이지 로드 시 API URL 및 파일 목록과 설정 자동 로드
-        window.addEventListener('load', () => {
-            // 저장된 API URL 복원
-            const savedUrl = localStorage.getItem('apiUrl');
-            if (savedUrl) {
-                API_URL = savedUrl;
-                document.getElementById('apiUrl').value = savedUrl;
-                document.getElementById('currentApiUrl').textContent = savedUrl;
+        // Run Refresh
+        async function runRefresh() {
+            if (!confirm('모든 엑셀 파일을 리프레시하시겠습니까?')) return;
+            try {
+                showLoading(true);
+                const response = await fetch(`${API_URL}/run-refresh`, { method: 'POST' });
+                const data = await response.json();
+                showLoading(false);
+                if (response.ok) {
+                    showToast(data.message, 'success');
+                    addLog('엑셀 리프레시 실행됨', 'success');
+                } else {
+                    showToast(data.detail || '리프레시 실패', 'error');
+                }
+            } catch (error) {
+                showLoading(false);
+                showToast('리프레시 실행 실패', 'error');
+                addLog('리프레시 실행 실패', 'error');
             }
-
-            loadFiles();
-            loadSettings();
-        });
+        }
     </script>
 </body>
 </html>

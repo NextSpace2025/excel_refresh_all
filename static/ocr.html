@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On-Device OCR Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .loader { border-top-color: #3498db; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+    <div class="max-w-4xl mx-auto">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">📷 On-Device OCR Manager</h1>
+            <p class="text-gray-600">이미지 텍스트를 분석하여 파일명을 자동으로 정리합니다.</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 단일 파일 처리 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4 flex items-center">
+                    <span class="mr-2">📄</span> 단일 파일 정리
+                </h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">이미지 절대 경로</label>
+                        <input type="text" id="singlePath" placeholder="C:\images\sample.jpg" 
+                               class="mt-1 block w-full border border-gray-300 rounded-md p-2 text-sm">
+                    </div>
+                    <button onclick="processSingle()" id="btnSingle"
+                            class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
+                        분석 및 이름 변경
+                    </button>
+                </div>
+            </div>
+
+            <!-- 배치 폴더 처리 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4 flex items-center">
+                    <span class="mr-2">📁</span> 폴더 일괄 정리
+                </h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">대상 폴더 경로</label>
+                        <input type="text" id="folderPath" placeholder="C:\images\batch_folder" 
+                               class="mt-1 block w-full border border-gray-300 rounded-md p-2 text-sm">
+                    </div>
+                    <button onclick="processBatch()" id="btnBatch"
+                            class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition">
+                        폴더 내 전체 처리 시작
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 이미지 미리보기 영역 -->
+        <div id="previewContainer" class="mt-8 bg-white p-4 rounded-lg shadow-md hidden">
+            <h2 class="text-lg font-semibold mb-2 text-gray-700 flex items-center">
+                <span class="mr-2">🖼️</span> 이미지 미리보기
+            </h2>
+            <div class="flex justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 p-4">
+                <img id="imagePreview" src="" alt="Preview" class="max-h-80 rounded shadow-sm object-contain">
+            </div>
+        </div>
+
+        <!-- 결과 로그 영역 -->
+        <div class="mt-8 bg-gray-900 rounded-lg p-6 text-green-400 font-mono text-sm h-64 overflow-y-auto shadow-inner" id="logWindow">
+            <div>> 시스템 준비 완료. 경로를 입력하고 실행하세요...</div>
+        </div>
+    </div>
+
+    <script>
+        const logWindow = document.getElementById('logWindow');
+
+        function addLog(message, type = 'info') {
+            const div = document.createElement('div');
+            const time = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'text-red-400' : (type === 'success' ? 'text-blue-400' : 'text-green-400');
+            div.className = `mb-1 ${color}`;
+            div.innerHTML = `<span class="text-gray-500">[${time}]</span> ${message}`;
+            logWindow.appendChild(div);
+            logWindow.scrollTop = logWindow.scrollHeight;
+        }
+
+        // 이미지 미리보기 업데이트 함수
+        function updatePreview(path) {
+            const container = document.getElementById('previewContainer');
+            const img = document.getElementById('imagePreview');
+            
+            if (path && (path.toLowerCase().endsWith('.jpg') || path.toLowerCase().endsWith('.jpeg') || path.toLowerCase().endsWith('.png') || path.toLowerCase().endsWith('.bmp'))) {
+                img.src = `/chatbot/ocr/image?path=${encodeURIComponent(path)}`;
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        // 입력창에 이벤트 리스너 추가
+        document.getElementById('singlePath').addEventListener('input', (e) => updatePreview(e.target.value));
+
+        async function processSingle() {
+            const path = document.getElementById('singlePath').value;
+            if (!path) return alert('경로를 입력하세요.');
+
+            addLog(`단일 파일 처리 시작: ${path}...`);
+            updatePreview(path); // 처리 시작 시 미리보기 확인
+            try {
+                const response = await fetch('/chatbot/ocr/process', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file_path: path })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addLog(`성공! 새 파일명: ${data.filename}`, 'success');
+                    // 파일명이 변경되었으므로 미리보기 경로 업데이트
+                    setTimeout(() => {
+                        updatePreview(data.new_path);
+                    }, 500);
+                } else {
+                    addLog(`실패: ${data.detail}`, 'error');
+                }
+            } catch (e) {
+                addLog(`오류 발생: ${e.message}`, 'error');
+            }
+        }
+
+        async function processBatch() {
+            const path = document.getElementById('folderPath').value;
+            if (!path) return alert('폴더 경로를 입력하세요.');
+
+            if (!confirm('폴더 내의 모든 이미지 파일명이 변경됩니다. 진행하시겠습니까?')) return;
+
+            addLog(`배치 작업 요청 전송: ${path}...`);
+            try {
+                const response = await fetch('/chatbot/ocr/batch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ folder_path: path })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addLog(`배치 작업 완료! 로그 파일: ${data.log_path}`, 'success');
+                } else {
+                    addLog(`실패: ${data.detail}`, 'error');
+                }
+            } catch (e) {
+                addLog(`오류 발생: ${e.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

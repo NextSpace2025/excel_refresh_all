@@ -4,7 +4,9 @@
       "Bash(ls:*)",
       "Bash(git mv:*)",
       "Bash(move db_manager.py srcdatabase )",
-      "Bash(move:*)"
+      "Bash(move:*)",
+      "Bash(git add:*)",
+      "Bash(git reset:*)"
     ]
   }
 }

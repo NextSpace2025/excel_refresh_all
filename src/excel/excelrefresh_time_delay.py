@@ -1,10 +1,12 @@
 import win32com.client
+import pythoncom
 import time
 import os
 
 def refresh_excel(file_path, refresh_delay=10):
     try:
         print(f"🔄 새로고침 시작: {file_path}")
+        pythoncom.CoInitialize()  # 백그라운드 스레드에서 COM 초기화
         excel = win32com.client.DispatchEx("Excel.Application")
         excel.Visible = False
 
@@ -24,10 +26,13 @@ def refresh_excel(file_path, refresh_delay=10):
 
     except Exception as e:
         print(f"❌ 오류 발생 - {file_path}: {e}")
+    finally:
+        pythoncom.CoUninitialize()  # COM 정리
 
 def refresh_and_run_macro(file_path, macro_name, refresh_delay=10):
     try:
         print(f"🔄 [후처리] 새로고침 + 매크로 실행 시작: {file_path}")
+        pythoncom.CoInitialize()  # 백그라운드 스레드에서 COM 초기화
         excel = win32com.client.DispatchEx("Excel.Application")
         excel.Visible = False
 
@@ -50,6 +55,8 @@ def refresh_and_run_macro(file_path, macro_name, refresh_delay=10):
 
     except Exception as e:
         print(f"❌ [후처리] 오류 발생 - {file_path}: {e}")
+    finally:
+        pythoncom.CoUninitialize()  # COM 정리
 
 def run_all_refreshes(refresh_delay=10, inter_file_delay=5):
     """

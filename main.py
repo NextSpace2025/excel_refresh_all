@@ -1,11 +1,13 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from typing import List
 from contextlib import asynccontextmanager
-from src.api.models import FilePathWithId, FilePath, RefreshSettings
-from src.api import routes
+
 from src.database import db_manager
+from src.api.file_routes import router as file_router
+from src.api.refresh_routes import router as refresh_router
+from src.chatbot.router import router as chatbot_router
+
 
 # --- Event Handlers ---
 @asynccontextmanager
@@ -15,60 +17,79 @@ async def lifespan(_app: FastAPI):
     print("FastAPI server started. Database is ready.")
     yield
 
-# --- App Setup ---
-app = FastAPI(
-    title="Excel Refresh API",
-    description="An API to manage a list of Excel files and trigger a refresh process.",
-    version="1.0.0",
-    lifespan=lifespan,
-)
 
-# Mount static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# --- App Factory ---
+def create_app(include_ui: bool = True) -> FastAPI:
+    """FastAPI 앱 생성"""
+    app = FastAPI(
+        title="Excel Refresh API",
+        description="An API to manage a list of Excel files and trigger a refresh process.",
+        version="1.0.0",
+        lifespan=lifespan,
+    )
 
-# --- API Endpoints ---
+    # API Routers
+    app.include_router(file_router)
+    app.include_router(refresh_router)
 
-@app.get("/", summary="Web UI")
-async def serve_ui():
-    return FileResponse("static/index.html")
+    if include_ui:
+        # Static files & UI
+        app.mount("/static", StaticFiles(directory="static"), name="static")
+        app.include_router(chatbot_router)
 
-@app.get("/api", summary="API Status")
-async def read_root():
-    return await routes.read_root()
+        @app.get("/", summary="Web UI")
+        async def serve_ui():
+            return FileResponse("static/index.html")
 
-@app.get("/files", response_model=List[FilePathWithId], summary="List All Files")
-async def get_files():
-    return await routes.get_files()
+    @app.get("/api", summary="API Status")
+    async def read_root():
+        return {"status": "ok", "message": "Excel Refresh API is running"}
 
-@app.post("/files", summary="Add a New File")
-async def add_file(file: FilePath):
-    return await routes.add_file(file)
+    return app
 
-@app.put("/files/{file_id}", summary="Update a File Path")
-async def update_file(file_id: int, file: FilePath):
-    return await routes.update_file(file_id, file)
 
-@app.delete("/files/{file_id}", summary="Delete a File")
-async def delete_file(file_id: int):
-    return await routes.delete_file(file_id)
+# Default app instance (for uvicorn main:app)
+app = create_app(include_ui=True)
 
-@app.get("/settings", response_model=RefreshSettings, summary="Get Current Settings")
-async def get_settings():
-    return await routes.get_settings()
 
-@app.post("/settings", summary="Update Settings")
-async def update_settings(new_settings: RefreshSettings):
-    return await routes.update_settings(new_settings)
+def show_startup_menu() -> str:
+    """시작 메뉴 표시"""
+    print("\n" + "="*50)
+    print("       Excel Refresh Manager")
+    print("="*50)
+    print("실행 모드를 선택하세요:")
+    print()
+    print("  1. API 서버 (UI 없음, API만 제공)")
+    print("  2. 터미널 모드 (CLI 인터페이스)")
+    print("  3. 웹 UI 모드 (브라우저에서 사용)")
+    print()
+    print("  0. 종료")
+    print("="*50)
+    return input("선택: ").strip()
 
-@app.post("/run-refresh", summary="Run the Excel Refresh Process")
-async def run_refresh():
-    return await routes.run_refresh()
 
-@app.post("/init-db", summary="Initialize Database")
-async def init_database():
-    return await routes.init_database()
+if __name__ == "__main__":
+    import uvicorn
 
-# To run this server:ㅇ
-# 1. Install dependencies: pip install -r requirements.txt
-# 2. Start the server: uvicorn main:app --reload
-# 3. Open your browser to http://127.0.0.1:8000/docs
+    choice = show_startup_menu()
+
+    if choice == "1":
+        print("\nAPI 서버를 시작합니다...")
+        print("API 문서: http://127.0.0.1:8000/docs")
+        api_only_app = create_app(include_ui=False)
+        uvicorn.run(api_only_app, host="127.0.0.1", port=8000)
+
+    elif choice == "2":
+        print("\n터미널 모드를 시작합니다...")
+        from src.cli.terminal import run
+        run()
+
+    elif choice == "3":
+        print("\n웹 UI 서버를 시작합니다...")
+        print("브라우저에서 http://127.0.0.1:8000 접속하세요")
+        uvicorn.run(app, host="127.0.0.1", port=8000)
+
+    elif choice == "0":
+        print("프로그램을 종료합니다.")
+    else:
+        print("잘못된 선택입니다. 프로그램을 종료합니다.")
