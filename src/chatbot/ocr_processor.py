@@ -1,8 +1,16 @@
 import os
 import re
+import sys
 from datetime import datetime
 import easyocr
 from typing import List, Dict, Any
+
+# Windows 환경에서의 인코딩 문제 해결
+if sys.stdout.encoding.lower() == 'utf-8':
+    pass
+else:
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 try:
     import pandas as pd
